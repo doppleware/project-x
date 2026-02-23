@@ -4,10 +4,10 @@ import { AppLayout } from "@/components/layout/app-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { mockInitiatives } from "@/data/mock-initiatives"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import { CheckCircle2, Circle, ChevronDown, AlertTriangle, Clock, UserCheck, Loader2 } from "lucide-react"
+import { CheckCircle2, Circle, ChevronDown, AlertTriangle, UserCheck, Loader2 } from "lucide-react"
 import Link from "next/link"
 
-function InitiativeStatusBadge({ status }: { status: any }) {
+function InitiativeStatusBadge({ status }: { status: { type: string; reason?: string } }) {
   if (status.type === "in_progress_agent") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">

@@ -9,7 +9,7 @@ import Link from "next/link"
 import { useParams } from "next/navigation"
 import { useState } from "react"
 
-function InitiativeStatusBadge({ status }: { status: any }) {
+function InitiativeStatusBadge({ status }: { status: { type: string; reason?: string } }) {
   if (status.type === "in_progress_agent") {
     return (
       <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-3 py-1.5 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
