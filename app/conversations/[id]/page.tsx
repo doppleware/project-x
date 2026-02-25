@@ -3,6 +3,7 @@
 import { AppLayout } from "@/components/layout/app-layout"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { mockInitiatives } from "@/data/mock-initiatives"
 import { ArrowLeft, Send, Users, FileText, MessageSquare } from "lucide-react"
 import Link from "next/link"
 import { useParams } from "next/navigation"
@@ -62,11 +63,42 @@ const mockConversation = {
   ]
 }
 
+function resolveBackLink(convId: string): { href: string; label: string } {
+  // Story conversation format: conv-{initiativeId}-{storyIndex}-{stageIndex}-{subIndex}
+  // e.g. conv-init-1-0-1-2 → parts: ["conv","init","1","0","1","2"]
+  // Initiative conversation format: conv-init-{n}
+  // e.g. conv-init-1 → parts: ["conv","init","1"]
+  const parts = convId.split("-")
+  // parts[0]="conv", parts[1]="init", parts[2]=initiative number
+  const initiativeId = `${parts[1]}-${parts[2]}`
+  const initiative = mockInitiatives.find(i => i.id === initiativeId)
+
+  if (parts.length > 3) {
+    // Story-level conversation
+    const storyIndex = parseInt(parts[3])
+    const story = initiative?.stories[storyIndex]
+    if (story && initiative) {
+      return {
+        href: `/initiatives/${initiative.id}/stories/${story.id}`,
+        label: story.name,
+      }
+    }
+  }
+
+  // Initiative-level conversation (or fallback)
+  if (initiative) {
+    return { href: `/initiatives/${initiative.id}`, label: initiative.name }
+  }
+
+  return { href: "/initiatives", label: "Initiatives" }
+}
+
 export default function ConversationDetailPage() {
   const params = useParams()
   const [activeTab, setActiveTab] = useState<"chat" | "context">("chat")
   const [messageInput, setMessageInput] = useState("")
   const conversation = mockConversation
+  const backLink = resolveBackLink(String(params.id))
 
   const handleSendMessage = () => {
     if (messageInput.trim()) {
@@ -82,10 +114,10 @@ export default function ConversationDetailPage() {
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="space-y-1 flex-1">
-            <Link href="/initiatives">
+            <Link href={backLink.href}>
               <Button variant="ghost" size="sm" className="mb-2">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Initiative
+                Back to {backLink.label}
               </Button>
             </Link>
             <h1 className="text-3xl font-bold tracking-tight">{conversation.initiativeName}</h1>
